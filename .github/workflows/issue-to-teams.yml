@@ -22,7 +22,7 @@ jobs:
 
     - name: Send message to Teams via Logic Apps
       env:
-        LOGIC_APP_URL: ${{ secrets.LOGIC_APP_URL }}
+        LOGIC_APP_URL: "https://prod-24.westeurope.logic.azure.com:443/workflows/6471079082f943a599bc93758ccdde69/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xx-T-N1LK5HTrjXuG8L7NC9Kzngh57K7-H38tjKSAiU"
         ISSUE_NUMBER: ${{ env.number }}
         ISSUE_TITLE: ${{ env.title }}
         ISSUE_BODY: ${{ env.body }}
