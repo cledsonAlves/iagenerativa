@@ -1,0 +1,37 @@
+name: Post Issue to Teams via Logic Apps
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  post_to_teams:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+
+    - name: Get issue details
+      id: issue
+      run: |
+        echo "number=${{ github.event.issue.number }}" >> $GITHUB_ENV
+        echo "title=${{ github.event.issue.title }}" >> $GITHUB_ENV
+        echo "body=${{ github.event.issue.body }}" >> $GITHUB_ENV
+        echo "url=${{ github.event.issue.html_url }}" >> $GITHUB_ENV
+
+    - name: Send message to Teams via Logic Apps
+      env:
+        LOGIC_APP_URL: ${{ secrets.LOGIC_APP_URL }}
+        ISSUE_NUMBER: ${{ env.number }}
+        ISSUE_TITLE: ${{ env.title }}
+        ISSUE_BODY: ${{ env.body }}
+        ISSUE_URL: ${{ env.url }}
+      run: |
+        MESSAGE="{
+          \"title\": \"New Issue #$ISSUE_NUMBER: $ISSUE_TITLE\",
+          \"text\": \"$ISSUE_BODY\",
+          \"url\": \"$ISSUE_URL\"
+        }"
+        
+        curl -H "Content-Type: application/json" -d "$MESSAGE" $LOGIC_APP_URL
