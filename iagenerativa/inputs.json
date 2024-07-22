@@ -1,0 +1,7 @@
+{
+  "workflow_dispatch": {
+    "inputs": {
+      "user_input": "Qual valor é 2 + 2"
+    }
+  }
+}

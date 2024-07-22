@@ -1,0 +1,41 @@
+name: Node.js Manual Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_input:
+        description: 'Input to pass to the script'
+        required: true
+        default: 'Hello, AI'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Print inputs
+        run: echo " $USER_INPUT"
+        env:
+          USER_INPUT: ${{ github.event.inputs.user_input }}
+
+      - name: Run script
+        env:
+          GEMINI_API_KEY: 'AIzaSyAwrHviTuvh1dA5Z-DJYku7r2U8gykGqYw'
+          USER_INPUT: 'Escreva sobre um dia típico'
+        run: |
+          echo "User input: $USER_INPUT"
+          node index.mjs "$USER_INPUT"
+
+
+

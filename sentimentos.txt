@@ -1,0 +1,8 @@
+Entrega do Android: Ajuste na melhoria da tela de assessoria
+Entrega do Android: Incluido nova home e é possivel agora falar com especialista pela home do app
+Entrega do Android: Ajuste em bugs que ocorre no modo offline
+A Release de Android esta em regressivo
+A Release de iOS já esta em Alpha
+Bugs Android : 5
+Bugs iOS: 7
+
