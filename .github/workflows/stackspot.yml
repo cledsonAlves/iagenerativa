@@ -2,8 +2,7 @@ name: Obtain and Use Token
 
 on:
   push:
-    branches:
-      - main
+
 
 jobs:
   example-job:
