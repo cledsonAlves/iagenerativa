@@ -1,0 +1,59 @@
+name: Obtain and Use Token
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  example-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Obtain Token
+        id: get-token
+        run: |
+          response=$(curl -s -X POST "'https://idm.stackspot.com/stackspot-freemium/oidc/oauth/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "client_id=cc9f20d3-a84f-4919-8219-507437035bf1" \
+            -d "client_secret=0YnC5HB11LQAZ7eWNWjX8o1mnR9AuTf3awhhu66x3RQCh5577LI77lGDBmQ26IYn" \
+            -d "grant_type=client_credentials")
+          token=$(echo $response | jq -r .access_token)
+          echo "Token obtained: $token"
+          echo "::set-output name=access_token::$token"
+        env:
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+
+      - name: Use Token and Get Execution ID
+        id: use-token
+        run: |
+          token="${{ steps.get-token.outputs.access_token }}"
+          response=$(curl -s -X POST "https://genai-code-buddy-api.stackspot.com/v1/quick-commands/create-execution/release-notes" \
+            -H "Authorization: Bearer $token" \
+            -H "Content-Type: application/json" \
+            -d '{"input_data": "your question"}')
+          execution_id=$(echo $response | jq -r .execution_id)
+          echo "Execution ID: $execution_id"
+          echo "::set-output name=execution_id::$execution_id"
+
+      - name: Check Execution Status
+        run: |
+          token="${{ steps.get-token.outputs.access_token }}"
+          execution_id="${{ steps.use-token.outputs.execution_id }}"
+          while true; do
+            response=$(curl -s -X GET "https://genai-code-buddy-api.stackspot.com/v1/quick-commands/callback/$execution_id" \
+              -H "Authorization: Bearer $token" \
+              -H "Content-Type: application/json")
+            status=$(echo $response | jq -r '.process.status')
+            echo "Current status: $status"
+            if [[ "$status" == "COMPLETED" ]]; then
+              final_result=$(echo $response | jq -r '.final_result')
+              echo "Final result: $final_result"
+              break
+            fi
+            sleep 10
+          done
