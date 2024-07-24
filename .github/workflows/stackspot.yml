@@ -15,7 +15,7 @@ jobs:
       - name: Obtain Token
         id: get-token
         run: |
-          response=$(curl -s -X POST "'https://idm.stackspot.com/stackspot-freemium/oidc/oauth/token" \
+          response=$(curl -s -X POST "https://idm.stackspot.com/stackspot-freemium/oidc/oauth/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "client_id=cc9f20d3-a84f-4919-8219-507437035bf1" \
             -d "client_secret=0YnC5HB11LQAZ7eWNWjX8o1mnR9AuTf3awhhu66x3RQCh5577LI77lGDBmQ26IYn" \
