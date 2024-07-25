@@ -1,58 +1,31 @@
-name: "[CI] Emulator Android"
+name: "[CI] Emulator Android"workflow_dispatch:
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  build:
+  subir-emulador:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 11   
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          sdk-version: '30'
-
-      - name: Install System Image and Emulator
+      - uses: actions/checkout@v3
+      - name: Configurar ambiente
         run: |
-          echo "y" | sdkmanager "system-images;android-30;google_apis;x86"
-          echo "y" | sdkmanager "emulator"
-          sdkmanager --list
-
-      - name: Check and Set SDK Paths
+          echo "y" | sdkmanager "platforms;android-33" "system-images;android-33;google_apis;x86_64"
+          echo "no" | avdmanager create avd -n my_avd -k "system-images;android-33;google_apis;x86_64" --force
+      - name: Iniciar emulador
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          echo "Checking Android SDK paths..."
-          ls -l $ANDROID_HOME
-          ls -l $ANDROID_SDK_ROOT
-          echo "Listing all installed packages:"
-          sdkmanager --list
-
-      - name: Create and Start Emulator
-        run: |
-          echo "Creating AVD..."
-          echo "no" | avdmanager create avd --force --name test --abi google_apis/x86 --package 'system-images;android-30;google_apis;x86'
-          echo "Starting Emulator..."
-          $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
+          emulator -avd my_avd -no-window &
           adb wait-for-device
-          adb devices
-
-      - name: Install Dependencies and Build
+      - name: Instalar aplicativo
         run: |
-          # Seu código para instalar dependências e construir o projeto
-          echo "Installing dependencies and building project."
-
-      - name: Run Tests
+          adb install -r app-release.apk
+      - name: Executar testes
         run: |
-          # Seu código para rodar os testes
-          echo "Running tests."
+          # Comandos para executar seus testes (ex: ./gradlew test)
+      - name: Listar storage
+        run: |
+          adb shell ls /data/data/com.example.myapp
+      - name: Parar emulador
+        run: |
+          adb emu kill
