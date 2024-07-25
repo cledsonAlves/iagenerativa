@@ -9,6 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          tools: platform-tools, build-tools
+              # cmdline-tools-version: 8512546  # Example for specific version
+
       - name: Configurar ambiente
         run: |
           echo "y" | sdkmanager "platforms;android-33" "system-images;android-33;google_apis;x86_64"
