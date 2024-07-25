@@ -1,4 +1,4 @@
-name: "[CI] Emulator Android"workflow_dispatch:
+name: "[CI] Emulator Android"
 
 on:
   push:
