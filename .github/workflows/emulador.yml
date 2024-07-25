@@ -1,0 +1,58 @@
+name: "[CI] Emulator Android"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 11   
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          sdk-version: '30'
+
+      - name: Install System Image and Emulator
+        run: |
+          echo "y" | sdkmanager "system-images;android-30;google_apis;x86"
+          echo "y" | sdkmanager "emulator"
+          sdkmanager --list
+
+      - name: Check and Set SDK Paths
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "Checking Android SDK paths..."
+          ls -l $ANDROID_HOME
+          ls -l $ANDROID_SDK_ROOT
+          echo "Listing all installed packages:"
+          sdkmanager --list
+
+      - name: Create and Start Emulator
+        run: |
+          echo "Creating AVD..."
+          echo "no" | avdmanager create avd --force --name test --abi google_apis/x86 --package 'system-images;android-30;google_apis;x86'
+          echo "Starting Emulator..."
+          $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim &
+          adb wait-for-device
+          adb devices
+
+      - name: Install Dependencies and Build
+        run: |
+          # Seu código para instalar dependências e construir o projeto
+          echo "Installing dependencies and building project."
+
+      - name: Run Tests
+        run: |
+          # Seu código para rodar os testes
+          echo "Running tests."
