@@ -1,4 +1,4 @@
-name: "[CI] Emulator Android"
+name: Subir Emulador Android e Listar Storage
 
 on:
   push:
@@ -9,16 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
-        with:
-          tools: platform-tools, build-tools
-              # cmdline-tools-version: 8512546  # Example for specific version
 
-      - name: Configurar ambiente
+      - name: Criar AVD
         run: |
-          echo "y" | sdkmanager "platforms;android-33" "system-images;android-33;google_apis;x86_64"
           echo "no" | avdmanager create avd -n my_avd -k "system-images;android-33;google_apis;x86_64" --force
       - name: Iniciar emulador
         run: |
