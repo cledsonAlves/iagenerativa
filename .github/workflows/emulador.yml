@@ -2,7 +2,7 @@ name: Subir Emulador Android e Listar Storage
 
 on:
   push:
-    branches: [ main ]
+    branches: [ mainyrf ]
 
 jobs:
   subir-emulador:
