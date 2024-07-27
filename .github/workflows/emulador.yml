@@ -1,33 +1,25 @@
-name: Subir Emulador Android e Listar Storage
+name: Android Emulator
 
-on:
-  push:
-    branches: [ mainyrf ]
+on: [push]
 
 jobs:
-  subir-emulador:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Criar AVD
+      - name: Setup Android Emulator
+        uses: android-actions/android-emulator-runner@v1
+        with:
+          api-level: '30'
+          arch: 'x86_64'
+          force-avd-creation: true
+
+      - name: Start Emulator
         run: |
-          echo "no" | avdmanager create avd -n my_avd -k "system-images;android-33;google_apis;x86_64" --force
-      - name: Iniciar emulador
-        run: |
-          emulator -avd my_avd -no-window &
+          emulator -avd test -no-skin -no-audio -no-boot-anim &
           adb wait-for-device
-      - name: Instalar aplicativo
-        run: |
-          adb install -r app-release.apk
-      - name: Executar testes
-        run: |
-          # Comandos para executar seus testes (ex: ./gradlew test)
-      - name: Listar storage
-        run: |
-          adb shell ls /data/data/com.example.myapp
-      - name: Parar emulador
-        run: |
-          adb emu kill
+          adb shell input keyevent 82
+
+      # Adicione passos para rodar testes aqui
